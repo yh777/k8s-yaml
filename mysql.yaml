@@ -1,0 +1,43 @@
+apiVersion: apps/v1    # for versions before 1.8.0 use apps/v1beta1
+kind: DaemonSet
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      nodeSelector:
+        app: traefik
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        env: 
+          - name: MYSQL_ROOT_PASSWORD
+            value: "123"
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+          - name: dbdata
+            mountPath: /var/lib/mysql
+          - name: etc
+            mountPath: /etc/mysql
+          - name: timefile
+            mountPath: /etc/localtime
+            
+      volumes:
+      - name: dbdata
+        hostPath:
+          path: /data/mysql/data
+      - name: etc
+        hostPath:
+          path: /data/mysql/etc
+      - name: timefile
+        hostPath:
+          path: /etc/localtime

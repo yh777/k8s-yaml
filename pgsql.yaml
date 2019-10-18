@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: pgsql-ds
+  labels:
+    app: pgsql
+spec:
+  selector:
+    matchLabels:
+      app: pgsql
+  template:
+    metadata:
+      labels:
+        app: pgsql
+    spec:
+      nodeSelector:
+        app: pgsql
+      containers:
+      - name: pgsql
+        image: postgres:10-alpine
+        env:
+        - name: POSTGRES_PASSWORD
+          value: "123456"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: timefile
+          mountPath: /etc/localtime
+        - name: dbdir
+          mountPath: /var/lib/postgresql/data
+      - name: kong
+        image: kong:1.3
+        env:
+        - name: KONG_DATABASE
+          value: "postgres"
+        - name: KONG_PG_HOST
+          value: "127.0.0.1"
+        - name: KONG_CASSANDRA_CONTACT_POINTS
+          value: "kong"
+        - name: KONG_PROXY_ACCESS_LOG
+          value: "/dev/stdout"
+        - name: KONG_ADMIN_ACCESS_LOG
+          value: "/dev/stdout"
+        - name: KONG_PROXY_ERROR_LOG
+          value: "/dev/stderr"
+        - name: KONG_ADMIN_ERROR_LOG
+          value: "/dev/stderr"
+        - name: KONG_ADMIN_LISTEN
+          value: "0.0.0.0:8001, 0.0.0.0:8444 ssl"
+        ports:
+        - name: access
+          containerPort: 8000
+          hostPort: 80
+        - name: access-ssl
+          containerPort: 8443
+          hostPort: 443
+        - name: admin
+          containerPort: 8001
+          hostPort: 8001
+        - name: admin-ssl
+          containerPort: 8444
+          hostPort: 8444
+         
+        volumeMounts:
+        - name: timefile
+          mountPath: /etc/localtime
+
+      volumes:
+      - name: timefile
+        hostPath:
+          path: /etc/localtime
+      - name: dbdir
+        hostPath:
+          path: /data/pgsql/data/
+

@@ -1,0 +1,37 @@
+apiVersion: v1
+data:
+  dynamic-conf.toml: |
+    [http]
+      [http.routers]
+        [http.routers.Router-1]
+          rule = "Host(`www.test.com`)"
+          entryPoints = ["web"]
+          service = "my-service"
+
+      [http.services]
+        [http.services.my-service.loadBalancer]
+
+          [[http.services.my-service.loadBalancer.servers]]
+            url = "http://172.17.160.2:80/"
+          [[http.services.my-service.loadBalancer.servers]]
+            url = "http://172.17.128.2:80/"
+  traefik.toml: |
+    [api]
+      insecure = true
+    [log]
+       level = "debug"
+    [entryPoints]
+      [entryPoints.web]
+        address = ":80"
+      [entryPoints.web-secure]
+        address = ":443"
+    [providers.kubernetesCRD]
+      endpoint = "https://10.254.0.1:443"
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2019-10-16T09:45:46Z"
+  name: traefik-conf
+  namespace: default
+  resourceVersion: "3907918"
+  selfLink: /api/v1/namespaces/kube-system/configmaps/traefik-conf
+  uid: ba27176a-eff9-11e9-b348-000c291fe0d6

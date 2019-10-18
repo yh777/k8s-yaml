@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: kong
+  labels:
+    app: kong
+spec:
+  selector:
+    matchLabels:
+      app: kong
+  template:
+    metadata:
+      labels:
+        app: kong 
+    spec:
+      nodeSelector:
+        app: pgsql
+      containers:
+      - name: kong 
+        image: kong:1.3
+        env:
+        - name: KONG_DATABASE
+          value: "postgres"
+        - name: KONG_PG_HOST=pgsql
+          value: "postgres"
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: timefile
+          mountPath: /etc/localtime
+        - name: dbdir
+          mountPath: /var/lib/postgresql/data
+
+      volumes:
+      - name: timefile
+        hostPath:
+          path: /etc/localtime
+      - name: dbdir
+        hostPath:
+          path: /data/pgsql/data/
+

@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: mysql-ingress
+  annotations:
+      traefik.ingress.kubernetes.io/affinity: "true"
+      traefik.ingress.kubernetes.io/session-cookie-name: "gls-test"
+      traefik.ingress.kubernetes.io/load-balancer-method: drr
+spec:
+  rules:
+  - host: mysql.test.com
+    tcp:
+      paths:
+      - path: 
+        backend:
+          serviceName: mysql
+          servicePort: 3306
+
