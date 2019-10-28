@@ -1,0 +1,43 @@
+---
+# postgresql
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-outside
+  namespace: kong
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-outside
+  serviceName: postgres-outside
+  template:
+    metadata:
+      labels:
+        app: postgres-outside
+    spec:
+      nodeSelector:
+        app: dashboard
+      containers:
+      - env:
+        - name: POSTGRES_USER
+          value: kong
+        - name: POSTGRES_PASSWORD
+          value: "321"
+        - name: POSTGRES_DB
+          value: kong
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        image: postgres:10-alpine
+        name: postgres-outside
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data/pgdata
+          name: datadir
+      volumes:
+      - name: datadir
+        hostPath: 
+          path: /data/postgres/data-outside
+      terminationGracePeriodSeconds: 60

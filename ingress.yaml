@@ -2,8 +2,6 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: test-ingress
-  annotations:
-      traefik.ingress.kubernetes.io/affinity: "true"
 spec:
   rules:
   - host: www.test.com

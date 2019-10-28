@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-ds
+  name: nginx-test-deploy
   labels:
-    app: nginx
+    app: nginx-test-label
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: nginx
+      app: nginx-test-pod
   template:
     metadata:
       labels:
-        app: nginx
+        app: nginx-test-pod
     spec: 
       nodeSelector:
-        app: nginx
+        app: dns
       containers:
-      - name: nginx
+      - name: nginx-test-container
         image: nginx:1.15
         ports:
         - containerPort: 80

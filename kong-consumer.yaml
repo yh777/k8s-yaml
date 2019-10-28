@@ -1,0 +1,6 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: consumer02
+username: user02
+custom_id: user02

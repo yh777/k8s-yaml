@@ -1,0 +1,11 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: ratelimiting
+consumerRef: consumer-team-x
+config:
+  hour: 100
+  limit_by: ip
+  second: 1
+  minute: 5
+plugin: rate-limiting

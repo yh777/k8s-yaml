@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: konga-ds
+  labels:
+    app: konga
+spec:
+  selector:
+    matchLabels:
+      app: konga
+  template:
+    metadata:
+      labels:
+        app: konga
+    spec:
+      nodeName: test105
+      containers:
+      - name: konga
+        imagePullPolicy: IfNotPresent
+        image: pantsel/konga
+        ports:
+        - name: konga
+          containerPort: 1337
+          hostPort: 1337
+        volumeMounts:
+        - name: timefile
+          mountPath: /etc/localtime
+        - name: kongadata
+          mountPath: /app/kongadata
+        env:
+        - name: TOKEN_SECRET
+          value: "A7e8gJmez5kH"
+        - name: NODE_ENV
+          value: "production"
+      volumes:
+      - name: timefile
+        hostPath:
+          path: /etc/localtime
+      - name: kongadata
+        hostPath:
+          path: /data/kongadata

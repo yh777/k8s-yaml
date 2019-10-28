@@ -1,0 +1,43 @@
+---
+# postgresql
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-inside
+  namespace: kong
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-inside
+  serviceName: postgres-inside
+  template:
+    metadata:
+      labels:
+        app: postgres-inside
+    spec:
+      nodeSelector:
+        app: dashboard
+      containers:
+      - env:
+        - name: POSTGRES_USER
+          value: kong
+        - name: POSTGRES_PASSWORD
+          value: "123"
+        - name: POSTGRES_DB
+          value: kong
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        image: postgres:10-alpine
+        name: postgres-inside
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data/pgdata
+          name: datadir
+      volumes:
+      - name: datadir
+        hostPath: 
+          path: /data/postgres/data-inside
+      terminationGracePeriodSeconds: 60
