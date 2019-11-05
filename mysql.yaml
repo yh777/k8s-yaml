@@ -13,8 +13,7 @@ spec:
       labels:
         app: mysql
     spec:
-      nodeSelector:
-        app: traefik
+      nodeName: test103
       containers:
       - name: mysql
         image: mysql:5.7
@@ -26,18 +25,13 @@ spec:
         volumeMounts:
           - name: dbdata
             mountPath: /var/lib/mysql
-          - name: etc
-            mountPath: /etc/mysql
           - name: timefile
             mountPath: /etc/localtime
             
       volumes:
       - name: dbdata
-        hostPath:
-          path: /data/mysql/data
-      - name: etc
-        hostPath:
-          path: /data/mysql/etc
+        persistentVolumeClaim:
+          claimName: mysql-claim
       - name: timefile
         hostPath:
           path: /etc/localtime
