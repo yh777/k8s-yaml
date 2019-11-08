@@ -17,7 +17,7 @@ spec:
         - kong migrations bootstrap
         env:
         - name: KONG_PG_PASSWORD
-          value: "321"
+          value: "123"
         - name: KONG_PG_HOST
           value: postgres-outside
         - name: KONG_PG_PORT

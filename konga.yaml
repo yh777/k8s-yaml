@@ -14,7 +14,7 @@ spec:
       labels:
         app: konga
     spec:
-      nodeName: test105
+      nodeName: test103
       containers:
       - name: konga
         imagePullPolicy: IfNotPresent

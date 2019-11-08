@@ -18,13 +18,13 @@ spec:
         app: postgres-outside
     spec:
       nodeSelector:
-        app: dashboard
+        app1: kong
       containers:
       - env:
         - name: POSTGRES_USER
           value: kong
         - name: POSTGRES_PASSWORD
-          value: "321"
+          value: "123"
         - name: POSTGRES_DB
           value: kong
         - name: PGDATA
@@ -34,10 +34,15 @@ spec:
         ports:
         - containerPort: 5432
         volumeMounts:
-        - mountPath: /var/lib/postgresql/data/pgdata
-          name: datadir
-      volumes:
-      - name: datadir
-        hostPath: 
-          path: /data/postgres/data-outside
+        - mountPath: /var/lib/postgresql/data/
+          name: postgres-data
       terminationGracePeriodSeconds: 60
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "sc-rbd"
+      resources:
+        requests:
+          storage: 20Gi

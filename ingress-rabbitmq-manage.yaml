@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: rabbitmq-ingress
+  annotations:
+    kubernetes.io/ingress.class: outside
+spec:
+  rules:
+  - host: rabbitmq.test.com
+    http:
+      paths:
+      - path: 
+        backend:
+          serviceName: rabbitmq
+          servicePort: 15672
+

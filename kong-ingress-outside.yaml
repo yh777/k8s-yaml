@@ -20,7 +20,7 @@ spec:
         app: ingress-kong-outside
     spec:
       nodeSelector:
-        ann: outside
+        app1: kong
       containers:
       - env:
         - name: KONG_DATABASE
@@ -28,7 +28,7 @@ spec:
         - name: KONG_PG_HOST
           value: postgres-outside
         - name: KONG_PG_PASSWORD
-          value: "321"
+          value: "123"
         - name: KONG_NGINX_WORKER_PROCESSES
           value: "1"
         - name: KONG_NGINX_HTTP_INCLUDE
@@ -137,7 +137,7 @@ spec:
         - name: KONG_PG_HOST
           value: postgres-outside
         - name: KONG_PG_PASSWORD
-          value: "321"
+          value: "123"
         image: kong:1.3
         name: wait-for-migrations
       serviceAccountName: kong-serviceaccount
