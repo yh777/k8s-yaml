@@ -1,0 +1,107 @@
+---
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    enabled_plugins: |
+      [rabbitmq_management].
+    rabbitmq.conf: |
+      loopback_users.guest = false
+      listeners.tcp.default = 5672
+      hipe_compile = false
+      management.listener.port = 15672
+      management.listener.ssl = false
+  kind: ConfigMap
+  metadata:
+    name: rabbitmq-conf
+kind: List
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: rabbitmq
+  labels:
+    app: rabbitmq
+spec:
+  ports:
+   - name: http
+     protocol: TCP
+     port: 15672
+     targetPort: 15672
+   - name: amqp
+     protocol: TCP
+     port: 5672
+     targetPort: 5672
+  selector:
+    app: rabbitmq
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rabbitmq
+  labels:
+    app: rabbitmq
+spec:
+  serviceName: rabbitmq
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec: 
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3.8.1-management
+        ports:
+        - name: port1
+          containerPort: 15672
+        - name: port2
+          containerPort: 5672
+        volumeMounts:
+        - name: timefile
+          mountPath: /etc/localtime
+          readOnly: yes
+        - name: rabbitmq-conf
+          mountPath: /etc/rabbitmq
+        - name: rabbitmq-data
+          mountPath: /var/lib/rabbitmq
+        env:
+        - name: RABBITMQ_ERLANG_COOKIE
+          value: "IGONRFSUSIQZACAANAVU"
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: RABBITMQ_USE_LONGNAME
+          value: "true"
+        - name: K8S_SERVICE_NAME
+          value: rabbitmq
+        - name: RABBITMQ_NODENAME
+          value: rabbit@$(MY_POD_NAME).$(K8S_SERVICE_NAME).$(MY_POD_NAMESPACE).svc.cluster.local
+        - name: K8S_HOSTNAME_SUFFIX
+          value: .$(K8S_SERVICE_NAME).$(MY_POD_NAMESPACE).svc.cluster.local
+
+      volumes:
+      - name: timefile
+        hostPath:
+          path: /etc/localtime
+      - name: rabbitmq-conf
+        configMap:
+          name: rabbitmq-conf
+  volumeClaimTemplates:
+  - metadata:
+      name: rabbitmq-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "sc-rbd"
+      resources:
+        requests:
+          storage: 20Gi
