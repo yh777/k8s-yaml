@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec: 
+      nodeSelector:
+        app1: prometheus
+      containers:
+      - name: prometheus
+        image: prom/prometheus
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9090
+          hostPort: 9090
+        args:
+        - --config.file=/prometheus/etc/prometheus.yml
+        - --storage.tsdb.path=/prometheus 
+        - --web.console.libraries=/usr/share/prometheus/console_libraries 
+        - --web.console.templates=/usr/share/prometheus/consoles
+        volumeMounts:
+        - name: timefile
+          mountPath: /etc/localtime
+          readOnly: true
+        - name: prometheus-data
+          mountPath: /prometheus
+        - name: prometheus-conf
+          mountPath: /prometheus/etc/
+
+      volumes:
+      - name: timefile
+        hostPath:
+          path: /etc/localtime
+      - name: prometheus-data
+        persistentVolumeClaim:
+          claimName: prometheus-pvc
+      - name: prometheus-conf
+        configMap:
+          name: prometheus-conf
