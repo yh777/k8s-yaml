@@ -19,7 +19,7 @@ spec:
         app1: prometheus
       containers:
       - name: prometheus
-        image: prom/prometheus
+        image: prom/prometheus:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9090

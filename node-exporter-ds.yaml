@@ -1,0 +1,45 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: node-exporter
+spec:
+  template:
+    metadata:
+      labels:
+        app: node-exporter
+      name: node-exporter
+    spec:
+      containers:
+      - name: node-exporter
+        image: prom/node-exporter:latest
+        imagePullPolicy: IfNotPresent
+        args:
+        - --path.rootfs=/host 
+        ports:
+        - containerPort: 9100
+          hostPort: 9100
+          name: scrape
+        volumeMounts:
+        - name: timefile
+          mountPath: /etc/localtime
+          readOnly: true
+        - name: rootfs
+          mountPath: /host
+          readOnly: true
+          mountPropagation: HostToContainer
+      hostNetwork: true
+      hostPID: true
+      volumes:
+      - name: timefile
+        hostPath:
+          path: /etc/localtime
+      - name: rootfs
+        hostPath:
+          path: /
+
+
+#node_exporter用于监视主机系统。不建议将其部署为Docker容器，因为它需要访问主机系统。
+#请注意，要监视的任何非根装入点(non-root mount points)都需要绑定装入容器中。
+#如果启动用于主机监视的容器，请指定path.rootfs参数。此参数必须与挂载到容器中的主机根目录的路径匹配。
+#节点导出器将使用path.rootfs作为前缀来访问主机文件系统。
+
