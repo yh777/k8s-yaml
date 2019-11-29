@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: metrics-server
+  namespace: kube-system
+  annotations:
+          kubernetes.io/ingress.class: outside
+spec:
+  rules:
+  - host: metrics-server.test.com
+    http:
+      paths:
+      - path: 
+        backend:
+          serviceName: metrics-server
+          servicePort: 443
+

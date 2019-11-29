@@ -13,8 +13,8 @@ spec:
       - name: node-exporter
         image: prom/node-exporter:latest
         imagePullPolicy: IfNotPresent
-        args:
-        - --path.rootfs=/host 
+        #args:
+        #- --path.rootfs=/host 
         ports:
         - containerPort: 9100
           hostPort: 9100
@@ -23,19 +23,19 @@ spec:
         - name: timefile
           mountPath: /etc/localtime
           readOnly: true
-        - name: rootfs
-          mountPath: /host
-          readOnly: true
-          mountPropagation: HostToContainer
+        #- name: rootfs
+        #  mountPath: /host
+        #  readOnly: true
+        #  mountPropagation: HostToContainer
       hostNetwork: true
       hostPID: true
       volumes:
       - name: timefile
         hostPath:
           path: /etc/localtime
-      - name: rootfs
-        hostPath:
-          path: /
+      #- name: rootfs
+      #  hostPath:
+      #    path: /
 
 
 #node_exporter用于监视主机系统。不建议将其部署为Docker容器，因为它需要访问主机系统。
