@@ -6,7 +6,7 @@ metadata:
   labels:
     app: nginx-test-label
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: nginx-test-pod
@@ -15,23 +15,23 @@ spec:
       labels:
         app: nginx-test-pod
     spec: 
-      nodeSelector:
-        app: dns
       containers:
       - name: nginx-test-container
-        image: nginx:1.15
+        image: nginx:1.17
         ports:
         - containerPort: 80
         volumeMounts:
         - name: timefile
           mountPath: /etc/localtime
-        - name: webdir
-          mountPath: /usr/share/nginx/html
+        resources:
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 64Mi
 
       volumes:
       - name: timefile
         hostPath:
           path: /etc/localtime
-      - name: webdir
-        hostPath:
-          path: /root/htdocs/

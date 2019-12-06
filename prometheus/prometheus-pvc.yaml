@@ -1,11 +1,13 @@
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
   name: prometheus-pvc
+  namespace: kube-system
 spec:
-  accessModes:     
+  accessModes:
     - ReadWriteOnce
-  storageClassName: sc-rbd
   resources:
     requests:
       storage: 20Gi
+  storageClassName: sc-rbd
+
