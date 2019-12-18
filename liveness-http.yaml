@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
   - name: liveness
-    image: gcr.azk8s.cn/google_containers/liveness:latest镜像
+    image: gcr.azk8s.cn/google_containers/liveness:latest
     args:
     - /server
     livenessProbe:
