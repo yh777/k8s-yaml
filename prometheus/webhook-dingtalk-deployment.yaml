@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: webhook-dingtalk
+  name: webhook-dingtalk
+  namespace: kube-system
+spec:
+  ports:
+  - port: 8060
+    protocol: TCP
+    targetPort: 8060
+  selector:
+    app: webhook-dingtalk
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: webhook-dingtalk
+  name: webhook-dingtalk
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webhook-dingtalk
+  template:
+    metadata:
+      labels:
+        app: webhook-dingtalk
+    spec:
+      containers:
+      - image: timonwong/prometheus-webhook-dingtalk:v1.4.0
+        name: webhook-dingtalk
+        args:
+        - --config.file=/etc/prometheus-webhook-dingtalk/config.yml
+        ports:
+        - containerPort: 8060
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/prometheus-webhook-dingtalk/
+          readOnly: true
+
+      volumes:
+        - name: config-volume
+          configMap:
+            name: webhook-dingtalk-config
+

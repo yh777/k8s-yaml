@@ -8,11 +8,24 @@ metadata:
     addonmanager.kubernetes.io/mode: EnsureExists
 data:
   alertmanager.yml: |
-    global: null
+    global:
+      smtp_smarthost: 'smtp.139.com:25'
+      smtp_from: '18723487247@139.com'
+      smtp_auth_username: '18723487247@139.com'
+      smtp_auth_password: 'jys6283a@#'
+      smtp_require_tls: false
     receivers:
     - name: default-receiver
+      email_configs:
+      - to: jiangyingsheng@yuouhui1.com
+        send_resolved: true
+
+    - name: dingtailk
+      webhook_configs:
+      - url: "http://webhook-dingtalk.kube-system.svc:8060/dingtalk/webhook1/send"
+        send_resolved: true
     route:
       group_interval: 5m
       group_wait: 10s
-      receiver: default-receiver
-      repeat_interval: 3h
+      receiver: dingtailk
+      repeat_interval: 5m

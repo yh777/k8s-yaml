@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: konga-ingress
   annotations:
-    kubernetes.io/ingress.class: kong-outside
+    kubernetes.io/ingress.class: outside
 spec:
   rules:
   - host: konga.test.com

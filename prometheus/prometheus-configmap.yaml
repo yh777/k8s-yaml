@@ -9,6 +9,8 @@ metadata:
     addonmanager.kubernetes.io/mode: EnsureExists
 data:
   prometheus.yml: |
+    rule_files:
+    - test.rules
     scrape_configs:
     - job_name: prometheus
       static_configs:
@@ -152,6 +154,21 @@ data:
         source_labels:
         - __meta_kubernetes_pod_name
         target_label: kubernetes_pod_name
+
+    - job_name: 'mynode-test101'
+      static_configs:
+      - targets: ['192.168.99.101:9100']
+        labels:
+          __testlabel001: 1111111
+          __testlabel002: 2222222
+     # relabel_configs:
+ 
+    - job_name: 'http-simulator'
+      static_configs:
+      - targets: ['192.168.99.101:8080']
+        labels:
+          demo: true
+
     alerting:
       alertmanagers:
       - kubernetes_sd_configs:
@@ -169,3 +186,44 @@ data:
         - source_labels: [__meta_kubernetes_pod_container_port_number]
           regex:
           action: drop
+
+  test.rules: |
+    groups:
+    - name: example
+      rules:
+      
+      # 对于超过5分钟无法访问的任何实例发出警报。
+      - alert: InstanceDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: Disaster
+        annotations:
+          summary: "Instance {{ $labels.instance }} down"
+          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 2 minutes."
+
+      # 对请求延迟中值大于1s的任何实例发出警报
+      - alert: APIHighRequestLatency
+        expr: api_http_request_latencies_second{quantile="0.5"} > 1
+        for: 10m
+        annotations:
+          summary: "High request latency on {{ $labels.instance }}"
+          description: "{{ $labels.instance }} has a median request latency above 1s (current value: {{ $value }}s)"
+
+      # http-simulator 请求的错误率对2% ，并且持续1分钟时，产生告警 ，级别为 “非常严重的”
+      - alert: ErrorRateHigh
+        expr: sum(rate(http_requests_total{job="http-simulator", status="500"}[5m])) / sum(rate(http_requests_total{job="http-simulator"}[5m])) > 0.02
+        for: 1m
+        labels:
+          severity: High 
+        annotations:
+          summary: "High Error Rate detected"
+          description: "Error Rate is above 2% (current value is: {{ $value }}"
+
+    #- name: simulator-alert-rule
+    #  rules:
+    #  - alert: HttpSimulatorDown
+    #    expr: sum(up{job="http-simulator"}) == 0
+    #    for: 2m
+    #    labels:
+    #      severity: critical 

@@ -7,9 +7,9 @@ metadata:
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: EnsureExists
 spec:
-  storageClassName: standard
+  storageClassName: sc-rbd
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: "2Gi"
+      storage: "20Gi"
