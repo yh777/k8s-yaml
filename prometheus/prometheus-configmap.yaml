@@ -155,12 +155,12 @@ data:
         - __meta_kubernetes_pod_name
         target_label: kubernetes_pod_name
 
-    - job_name: 'mynode-test101'
-      static_configs:
-      - targets: ['192.168.99.101:9100']
-        labels:
-          __testlabel001: 1111111
-          __testlabel002: 2222222
+    #- job_name: 'mynode-test101'
+    #  static_configs:
+    #  - targets: ['192.168.99.101:9100']
+    #    labels:
+    #      __testlabel001: 1111111
+    #      __testlabel002: 2222222
      # relabel_configs:
  
     - job_name: 'http-simulator'
@@ -219,6 +219,10 @@ data:
         annotations:
           summary: "High Error Rate detected"
           description: "Error Rate is above 2% (current value is: {{ $value }}"
+
+      - record: http_requests_total_rate
+        expr: sum by (instance,status) (rate(http_requests_total{job="http-simulator",status="200"}[5m]))
+          
 
     #- name: simulator-alert-rule
     #  rules:
