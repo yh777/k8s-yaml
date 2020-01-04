@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kube-state-metrics-server
+  namespace: kube-system
+  annotations:
+          kubernetes.io/ingress.class: outside
+spec:
+  rules:
+  - host: kube-state-metrics.test.com
+    http:
+      paths:
+      - path: 
+        backend:
+          serviceName: kube-state-metrics
+          servicePort: 8080
+

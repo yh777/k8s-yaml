@@ -9,6 +9,9 @@ metadata:
     addonmanager.kubernetes.io/mode: EnsureExists
 data:
   prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 30s
     rule_files:
     - test.rules
     scrape_configs:
@@ -155,14 +158,6 @@ data:
         - __meta_kubernetes_pod_name
         target_label: kubernetes_pod_name
 
-    #- job_name: 'mynode-test101'
-    #  static_configs:
-    #  - targets: ['192.168.99.101:9100']
-    #    labels:
-    #      __testlabel001: 1111111
-    #      __testlabel002: 2222222
-     # relabel_configs:
- 
     - job_name: 'http-simulator'
       static_configs:
       - targets: ['192.168.99.101:8080']
@@ -193,14 +188,14 @@ data:
       rules:
       
       # 对于超过5分钟无法访问的任何实例发出警报。
-      - alert: InstanceDown
-        expr: up == 0
-        for: 2m
-        labels:
-          severity: Disaster
-        annotations:
-          summary: "Instance {{ $labels.instance }} down"
-          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 2 minutes."
+     # - alert: InstanceDown
+     #   expr: up == 0
+     #   for: 2m
+     #   labels:
+     #     severity: Disaster
+     #   annotations:
+     #     summary: "Instance {{ $labels.instance }} down"
+     #     description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 2 minutes."
 
       # 对请求延迟中值大于1s的任何实例发出警报
       - alert: APIHighRequestLatency
@@ -219,6 +214,16 @@ data:
         annotations:
           summary: "High Error Rate detected"
           description: "Error Rate is above 2% (current value is: {{ $value }}"
+
+      # 空闲文件系统空间小于
+      - alert: FileSystemFreeSlow
+        expr: node_filesystem_free_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.5
+        for: 10s
+        labels:
+          severity: Warning
+        annotations:
+          summary: "FileSystemFree less than 50%"
+          description: "/ disk space free is {{ $value }}"
 
       - record: http_requests_total_rate
         expr: sum by (instance,status) (rate(http_requests_total{job="http-simulator",status="200"}[5m]))
