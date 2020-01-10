@@ -32,6 +32,7 @@ spec:
             #- --path.procfs=/host/proc
             #- --path.sysfs=/host/sys
             - --path.rootfs=/host
+            - --collector.textfile.directory=/host/data/custom_metrics
           ports:
             - name: metrics
               containerPort: 9100

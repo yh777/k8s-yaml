@@ -23,15 +23,10 @@ spec:
         ports:
         - containerPort: 3306
         volumeMounts:
-          - name: dbdata
-            mountPath: /var/lib/mysql
           - name: timefile
             mountPath: /etc/localtime
             
       volumes:
-      - name: dbdata
-        persistentVolumeClaim:
-          claimName: mysql-claim
       - name: timefile
         hostPath:
           path: /etc/localtime

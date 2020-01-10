@@ -1,0 +1,31 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: mysql-exporter
+  labels:
+    app: mysql-exporter
+spec:
+  selector:
+    matchLabels:
+      app: mysql-exporter
+  template:
+    metadata:
+      labels:
+        app: mysql-exporter
+    spec:
+      containers:
+      - name: mysql-exporter
+        image: prom/mysqld-exporter:v0.12.1
+        env: 
+          - name: DATA_SOURCE_NAME
+            value: "exporter:123@(mysql.default.svc:3306)/"
+        ports:
+        - containerPort: 9104
+        volumeMounts:
+          - name: timefile
+            mountPath: /etc/localtime
+            
+      volumes:
+      - name: timefile
+        hostPath:
+          path: /etc/localtime
