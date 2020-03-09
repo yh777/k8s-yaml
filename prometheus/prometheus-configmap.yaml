@@ -158,11 +158,11 @@ data:
         - __meta_kubernetes_pod_name
         target_label: kubernetes_pod_name
 
-    - job_name: 'http-simulator'
-      static_configs:
-      - targets: ['192.168.99.101:8080']
-        labels:
-          demo: true
+    #- job_name: 'http-simulator'
+    #  static_configs:
+    #  - targets: ['192.168.99.101:8080']
+    #    labels:
+    #      demo: true
 
     alerting:
       alertmanagers:
@@ -217,7 +217,7 @@ data:
 
       # 空闲文件系统空间小于
       - alert: FileSystemFreeSlow
-        expr: node_filesystem_free_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.5
+        expr: node_filesystem_free_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.1
         for: 10s
         labels:
           severity: Warning
