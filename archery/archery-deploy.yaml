@@ -1,0 +1,100 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: archery
+  labels:
+    app: archery
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: archery
+    spec:
+      containers:
+      - name: redis5
+        image: redis:5
+        imagePullPolicy: IfNotPresent
+        command:
+        - redis-server
+        - --requirepass 123456
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+          - name: timefile
+            mountPath: /etc/localtime
+
+      - name: mysql57
+        image: mysql:5.7
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_DATABASE
+          value: archery
+        - name:  MYSQL_ROOT_PASSWORD
+          value: "123456"
+        volumeMounts:
+        - name: timefile
+          mountPath: /etc/localtime
+        - name: archery-mysql-cnf
+          mountPath: /etc/mysql/my.cnf
+          subPath: my.cnf
+#        - name: archery-mysql
+#          mountPath: /var/lib/mysql
+
+      - name: inception
+        image: hhyo/inception
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 6669
+        volumeMounts:
+        - name: inc-cnf
+          mountPath: /etc/inc.cnf
+          subPath: inc.cnf
+
+      - name: goinception
+        image: hanchuanchuan/goinception
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4000
+        volumeMounts:
+        - name: config-toml
+          mountPath: /etc/config.toml
+          subPath: config.toml
+
+      - name: archery
+        image: hhyo/archery:1.7.7
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9123
+        volumeMounts:
+        - name: settings-py
+          mountPath: /opt/archery/archery/settings.py
+          subPath: settings.py
+        - name: soar-yaml
+          mountPath: /etc/soar.yaml
+          subPath: soar.yaml
+
+      volumes:
+      - name: timefile
+        hostPath:
+          path: /etc/localtime
+      - name: archery-mysql-cnf
+        configMap:
+          name: archery-mysql-cnf
+#      - name: archery-mysql
+#        persistentVolumeClaim:
+#          claimName: archery-mysql
+      - name: inc-cnf
+        configMap:
+          name: inc-cnf
+      - name: config-toml
+        configMap:
+          name: config-toml
+      - name: settings-py
+        configMap:
+          name: settings-py
+      - name: soar-yaml
+        configMap:
+          name: soar-yaml
