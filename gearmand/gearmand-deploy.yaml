@@ -2,24 +2,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-test-deploy
+  name: gearmand
   labels:
-    app: nginx-test-label
+    app: gearmand
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: nginx-test-pod
+      app: gearmand
   template:
     metadata:
       labels:
-        app: nginx-test-pod
-    spec: 
+        app: gearmand
+    spec:
       containers:
-      - name: nginx-test-container
-        image: nginx:1.17
+      - name: gearmand
+        image: xg.cc/gearmand:1.1
+        imagePullPolicy: IfNotPresent
+        args:
+        - run
         ports:
-        - containerPort: 80
+        - containerPort: 4730
         volumeMounts:
         - name: timefile
           mountPath: /etc/localtime
@@ -35,3 +38,4 @@ spec:
       - name: timefile
         hostPath:
           path: /etc/localtime
+

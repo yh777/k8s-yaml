@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: gearmand
+spec:
+  selector:
+    app: gearmand
+  ports:
+  - name: gearmand-port
+    protocol: TCP
+    port: 4730
+    targetPort: 4730
