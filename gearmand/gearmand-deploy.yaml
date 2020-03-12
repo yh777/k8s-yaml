@@ -19,20 +19,24 @@ spec:
       - name: gearmand
         image: xg.cc/gearmand:1.1
         imagePullPolicy: IfNotPresent
-        args:
-        - run
+        command:
+        - gearmand 
+        - -u 
+        - gearmand 
+        - -L 
+        - 0.0.0.0 
         ports:
         - containerPort: 4730
         volumeMounts:
         - name: timefile
           mountPath: /etc/localtime
-        resources:
-          limits:
-            cpu: 200m
-            memory: 128Mi
-          requests:
-            cpu: 100m
-            memory: 64Mi
+        #resources:
+        #  limits:
+        #    cpu: 200m
+        #    memory: 128Mi
+        #  requests:
+        #    cpu: 100m
+        #    memory: 64Mi
 
       volumes:
       - name: timefile
