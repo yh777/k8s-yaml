@@ -6,9 +6,8 @@ spec:
   nodeName: test101
   containers:
   - name: gearmand
-    image: xg.cc/gearmand:1.1
+    image: artefactual/gearmand:1.1.18-alpine
     imagePullPolicy: IfNotPresent
-    command: ["gearmand","--round-robin", "-t", "2","-j","0","-w", "0","--verbose=DEBUG", "--log-file=/dev/stdout"]
     ports:
     - containerPort: 4730
 

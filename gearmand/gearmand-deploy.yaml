@@ -19,12 +19,6 @@ spec:
       - name: gearmand
         image: xg.cc/gearmand:1.1
         imagePullPolicy: IfNotPresent
-        command:
-        - gearmand 
-        - -u 
-        - gearmand 
-        - -L 
-        - 0.0.0.0 
         ports:
         - containerPort: 4730
         volumeMounts:
