@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sphinx
+  labels:
+    app: sphinx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sphinx
+  template:
+    metadata:
+      labels:
+        app: sphinx
+    spec:
+      containers:
+      - name: sphinx
+        image: xg.cc/sphinx:2.2
+        imagePullPolicy: IfNotPresent
+        args:
+        - server
+        ports:
+        - containerPort: 9312
+        - containerPort: 9306
+
+        volumeMounts:
+        - name: timefile
+          mountPath: /etc/localtime
+        - name: sphinx-etc
+          mountPath: /etc/sphinx
+        - name: sphinx-etc-conf
+          mountPath: /etc/sphinx/conf.d
+        #resources:
+        #  limits:
+        #    cpu: 200m
+        #    memory: 128Mi
+        #  requests:
+        #    cpu: 100m
+        #    memory: 64Mi
+
+      volumes:
+      - name: timefile
+        hostPath:
+          path: /etc/localtime
+      - name: sphinx-etc
+        configMap:
+          name: sphinx-etc
+      - name: sphinx-etc-conf
+        configMap:
+          name: sphinx-etc-conf
+

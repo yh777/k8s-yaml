@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: sphinx
+spec:
+  selector:
+    app: sphinx
+  ports:
+  - name: port-1
+    protocol: TCP
+    port: 9306
+    targetPort: 9306
+  - name: port-2
+    protocol: TCP
+    port: 9312
+    targetPort: 9312
