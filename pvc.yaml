@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+    volume.beta.kubernetes.io/storage-provisioner: alicloud/disk
+  finalizers:
+  - kubernetes.io/pvc-protection
+  name: code-disk
+  namespace: shiyuan
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Gi
+  storageClassName: alicloud-disk-ssd
+  volumeMode: Filesystem
+  volumeName: d-bp1aw7yt2qgcuf4yuwb7
+status:
+  accessModes:
+  - ReadWriteMany
+  capacity:
+    storage: 200Gi
+  phase: Bound
